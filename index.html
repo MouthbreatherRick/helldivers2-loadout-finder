@@ -1,150 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <title>Helldivers 2 — Loadout Finder + Squad Challenge</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Helldivers 2 Loadout Finder</title>
+  <meta name="description"
+    content="Role-driven, community-informed Helldivers 2 loadouts, squad challenges, and mission notes.">
+  <link rel="preconnect" href="https://hits.sh">
   <link rel="stylesheet" href="styles.css">
-  <style>
-    header {
-      text-align: center;
-      padding: 20px 0;
-      /* 20px top and bottom */
-    }
-
-    header img {
-      max-width: 400px;
-      /* won’t get larger than 400px */
-      min-width: 150px;
-      /* won’t get smaller than 150px */
-      width: 100%;
-      /* scales between min and max */
-      height: auto;
-      /* keeps aspect ratio */
-    }
-
-    nav.tabs {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    nav.tabs button {
-      margin: 0 5px;
-      padding: 8px 12px;
-    }
-  </style>
 </head>
 
 <body>
-  <header>
-    <img src="HelldiversLogoWhite_NoBG.svg" alt="Helldivers Logo">
+  <header class="site-header">
+    <h1>Helldivers 2 — Loadout Finder + Squad Challenge</h1>
+    <div class="visitor-pill" id="visitor-pill">
+      <span>Lifetime Site Visitors:</span>
+      <strong id="visitor-count">—</strong>
+    </div>
   </header>
-</body>
 
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Helldivers 2 Loadout Finder</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header class="container">
-    <nav class="tabs">
-      <button class="tab active" data-tab="finder">Loadout Finder</button>
-      <button class="tab" data-tab="challenge">Squad Challenge</button>
+  <main>
+    <nav class="tabs" role="tablist" aria-label="Modes">
+      <button class="tab active" data-tab="finder" role="tab" aria-selected="true">Loadout Finder</button>
+      <button class="tab" data-tab="challenge" role="tab" aria-selected="false">Squad Challenge</button>
+      <button class="tab" data-tab="notes" role="tab" aria-selected="false">Mission Notes</button>
     </nav>
 
-    <div class="visit-counter">
-      Lifetime Site Visitors: <span id="visitCount">—</span>
-    </div>
+    <!-- Shared Controls -->
+    <section class="controls" id="controls">
+      <div class="control">
+        <label for="faction">Faction</label>
+        <select id="faction">
+          <option>Terminids (Bugs)</option>
+          <option>Automatons (Bots)</option>
+          <option>Illuminate (Squids)</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="difficulty">Difficulty</label>
+        <select id="difficulty">
+          <option>Trivial</option>
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Challenging</option>
+          <option>Hard</option>
+          <option>Extreme</option>
+          <option>Suicide Mission</option>
+          <option>Impossible</option>
+          <option>Helldive</option>
+          <option>Super Helldive</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="objective">Objective</label>
+        <!-- Keep your 7-type taxonomy here if you already use it:
+             Elimination, Defense, Escort, Capture/Activate, Sabotage/Destroy, Retrieve/Carry, Final Extraction -->
+        <select id="objective">
+          <option>Elimination</option>
+          <option>Defense</option>
+          <option>Escort</option>
+          <option>Capture/Activate</option>
+          <option>Sabotage/Destroy</option>
+          <option>Retrieve/Carry</option>
+          <option>Final Extraction</option>
+        </select>
+      </div>
+      <div class="control">
+        <label for="team-synergy">Synergy Focus</label>
+        <select id="team-synergy">
+          <option value="balanced" selected>Balanced Squad</option>
+          <option value="anti-armor">Anti-Armor Pressure</option>
+          <option value="control">Crowd Control</option>
+          <option value="sustain">Sustain/Medic</option>
+          <option value="recon">Recon/Scout</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" id="reroll" title="Rebuild">Rebuild</button>
+    </section>
 
-    <h1>MouthbreatherTV - Helldivers 2 Loadout Finder</h1>
-    <p class="sub">Developed by MouthbreatherTV for the purpose of "because we can". Follow us on YouTube and Twitch, and let us know if we're missing anything!</p>
-    <p class="sub">
-      <a href="https://www.youtube.com/@mouthbreathertv" target="_blank" rel="noopener">
-        YouTube.com/@MouthbreatherTV 
-      </a>
-    </p>
-    <p class="sub">
-      <a href="https://www.twitch.tv/mouthbreatherttv" target="_blank" rel="noopener">
-          Twitch.tv/MouthbreatherTTV
+    <!-- Loadout Finder -->
+    <section id="finder" class="panel active" role="tabpanel" aria-label="Loadout Finder">
+      <!-- Your existing "Mission Note" card (kept generic; script populates notes in Notes tab) -->
+      <div class="card wide" id="mission-note-card">
+        <h3>Mission Note</h3>
+        <p id="mission-note-help">Adjust filters above. See the <strong>Mission Notes</strong> tab for objective
+          details.</p>
+      </div>
+
+      <!-- NEW: Solo Diving recommendation card (full-width) -->
+      <div class="card wide" id="solo-card">
+        <h3>Solo Diving — Recommended Loadout</h3>
+        <div class="row" id="solo-meta">
+          <span class="badge" id="solo-context">Based on community usage for current filters</span>
+        </div>
+        <div class="kv">
+          <div class="key">Primary</div>
+          <div class="val" id="solo-primary">—</div>
+        </div>
+        <div class="kv">
+          <div class="key">Sidearm</div>
+          <div class="val" id="solo-sidearm">—</div>
+        </div>
+        <div class="kv">
+          <div class="key">Grenade</div>
+          <div class="val" id="solo-grenade">—</div>
+        </div>
+        <div class="kv">
+          <div class="key">Booster</div>
+          <div class="val" id="solo-booster">—</div>
+        </div>
+        <div class="kv">
+          <div class="key">Armor</div>
+          <div class="val" id="solo-armor">—</div>
+        </div>
+        <div class="kv">
+          <div class="key">Stratagems</div>
+          <div class="val" id="solo-strats">—</div>
+        </div>
+      </div>
+
+      <!-- Class cards -->
+      <div class="squad-grid" id="finder-squad">
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+      </div>
+
+      <!-- Banner below squad cards (kept from your setup) -->
+      <div class="banner-wrap">
+        <a href="https://www.youtube.com/@mouthbreathertv" target="_blank" rel="noopener"
+          aria-label="Visit MouthbreatherTV on YouTube">
+          <img src="HellaThickDivers.jpg" alt="HellaThickDivers Banner" class="hella-banner" loading="lazy">
         </a>
-    </p>
-    <p class="sub">
-      <a href="https://www.instagram.com/mouthbreathertv/#" target="_blank" rel="noopener">
-        MouthbreatherTV Instagram
-      </a>
-    </p>
-    <p class="sub">
-      <a href="https://www.tiktok.com/@mouthbreather.ttv" target="_blank" rel="noopener">
-        MouthbreatherTV TikTok
-      </a>
-    </p>
-  </header>
-
-  <section class="container controls">
-    <div class="control">
-      <label for="faction">Faction</label>
-      <select id="faction"></select>
-    </div>
-    <div class="control">
-      <label for="difficulty">Difficulty</label>
-      <select id="difficulty"></select>
-    </div>
-    <div class="control">
-      <label for="objective">Objective</label>
-      <select id="objective"></select>
-    </div>
-    <div class="control inline-btns">
-      <button id="shareBtn">Share</button>
-      <button id="copyBtn">Copy</button>
-    </div>
-  </section>
-
-  <section class="container note">
-    <p class="sub">Mission Note:</p>
-    <div id="compNote"></div>
-  </section>
-
-  <section class="container" id="errors" style="display:none;">
-    <div class="errorbox"></div>
-  </section>
-
-  <section class="container results" id="results"></section>
-
-  <section class="container challenge hidden" id="challenge">
-    <div class="challenge-controls">
-      <div class="control">
-        <label for="players">Players</label>
-        <select id="players"><option>1</option><option>2</option><option>3</option><option selected>4</option></select>
       </div>
-      <div class="control">
-        <label>Difficulty</label>
-        <select id="challengeDifficulty"></select>
+    </section>
+
+    <!-- Squad Challenge -->
+    <section id="challenge" class="panel" role="tabpanel" aria-label="Squad Challenge">
+      <div class="challenge-controls">
+        <button class="btn" id="randomize-challenge">Randomize Squad</button>
+        <label class="inline"><input type="checkbox" id="enforce-boosters" checked> Enforce ≤ 2 duplicate
+          boosters</label>
+        <label class="inline"><input type="checkbox" id="faction-grenades" checked> Use faction grenade logic</label>
       </div>
-      <div class="control">
-        <label>Faction</label>
-        <select id="challengeFaction"></select>
+      <div class="squad-grid" id="challenge-squad">
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
+        <div class="card skeleton"></div>
       </div>
-      <div class="control inline-btns">
-        <button id="rollBtn">🎲 Generate Squad</button>
+    </section>
+
+    <!-- Mission Notes Tab -->
+    <section id="notes" class="panel" role="tabpanel" aria-label="Mission Notes">
+      <div class="card wide" id="notes-card">
+        <h3 id="notes-title">Possible Objectives</h3>
+        <p class="muted" id="notes-sub">Based on your selected Objective type above.</p>
+        <ul id="notes-list" class="bullets"></ul>
       </div>
-    </div>
-    <div class="container"><h2 id="challengeHeader" class="challenge-header"></h2></div>
-    <section class="container results" id="challengeResults"></section>
-  </section>
+    </section>
+  </main>
 
-  <div class="promo-banner">
-    <a href="https://www.youtube.com/@mouthbreathertv" target="_blank" rel="noopener">
-      <img src="HellaThickDivers.jpg" alt="Hellathickdivers Banner">
-    </a>
-  </div>
+  <footer class="site-footer">
+    <p>Made by Garrick Woods &amp; friends — for Democracy!</p>
+  </footer>
 
-  <footer class="container footer">
-    <p>Built by MouthbreatherTV · Static site, no tracking
-    <p>Hank has AIDS
-
-  <script src="script.js?v=v6_debug"></script>
-
-<script src="script.js" defer></script>
+  <script src="script.js" defer></script>
 </body>
+
 </html>
